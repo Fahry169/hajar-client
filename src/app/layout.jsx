@@ -1,5 +1,6 @@
 import { Outfit, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "./providers";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -19,11 +20,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`${outfit.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${outfit.variable} ${geistMono.variable} antialiased`}>
         <div className="font-outfit">
-        {children}
+          <Providers>{children}</Providers>
         </div>
       </body>
     </html>
