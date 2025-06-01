@@ -10,10 +10,6 @@ module.exports = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        outfit: ["var(--font-outfit)", "sans-serif"],
-        geistMono: ["var(--font-geist-mono)", "monospace"],
-      },
     },
   },
   darkMode: "class",
