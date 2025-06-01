@@ -1,0 +1,115 @@
+"use client";
+
+import { login } from "@/libs/hooks/login";
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";
+import { Button, Image } from "@heroui/react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { LoginModal } from "../LoginModal";
+
+const NavbarComponent = () => {
+  const [isBlurred, setIsBlurred] = useState(false);
+  const { isOpen, onOpen, onClose, handleLogin } = login();
+
+  const handleSmoothScroll = (e, sectionId) => {
+    e.preventDefault();
+
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsBlurred(true);
+      } else {
+        setIsBlurred(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  return (
+    <>
+      <Navbar
+        className={`bg-opacity-0 transition-all duration-500 py-1 ${
+          isBlurred ? "backdrop-blur-md shadow-md bg-opacity-50 bg-white" : ""
+        }`}
+      >
+        <NavbarContent>
+          <NavbarBrand className="flex gap-2">
+            <Link href="#" className="flex gap-2 items-center">
+              {/* <Image
+              alt="Logo"
+              src="/images/logo.png"
+              width={40}
+              height={40}
+            /> */}
+              <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center mr-3">
+                <div className="w-6 h-6 bg-white rounded-full"></div>
+              </div>
+              <p className=" hidden sm:block font-bold text-xl text-gray-700">
+                HAJAR
+              </p>
+            </Link>
+          </NavbarBrand>
+        </NavbarContent>
+
+        <NavbarContent className="flex gap-3 sm:gap-6" justify="center">
+          <NavbarItem className="text-xs sm:text-base text-gray-600 hover:font-semibold hover:text-black">
+            <Link
+              href="#cara-kerja"
+              onClick={(e) => handleSmoothScroll(e, "cara-kerja")}
+            >
+              Cara Kerja
+            </Link>
+          </NavbarItem>
+          <NavbarItem className="text-xs sm:text-base text-gray-600 hover:font-semibold hover:text-black ">
+            <Link
+              color="foreground"
+              href="#hajar"
+              onClick={(e) => handleSmoothScroll(e, "hajar")}
+            >
+              Hajar
+            </Link>
+          </NavbarItem>
+          <NavbarItem className="text-xs sm:text-base text-gray-600 hover:font-semibold hover:text-black">
+            <Link color="foreground" href="#contact">
+              Contact
+            </Link>
+          </NavbarItem>
+        </NavbarContent>
+
+        <NavbarContent justify="end" className="">
+          <NavbarItem className="flex">
+            <Button onPress={onOpen} className="bg-red-500 text-white">
+              <Image
+                alt="Google Logo"
+                src="/icon/google.svg"
+                width={22}
+                height={22}
+                className="inline-block mr-2"
+              />
+              Masuk
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
+      </Navbar>
+
+      <LoginModal isOpen={isOpen} onClose={onClose} handleLogin={handleLogin} />
+    </>
+  );
+};
+
+export default NavbarComponent;
