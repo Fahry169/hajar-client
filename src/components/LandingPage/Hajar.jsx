@@ -17,7 +17,7 @@ const Hajar = () => {
         <div>
           <Button
             onPress={onOpen}
-            className="w-48 sm:w-56 lg:w-60 font-semibold bg-yellow-500 py-6 text-white sm:text-base mt-10"
+            className="w-48 sm:w-56 lg:w-60 font-semibold bg-blue-600 py-6 text-white sm:text-base mt-10"
           >
             HAJAR Sekarang
           </Button>

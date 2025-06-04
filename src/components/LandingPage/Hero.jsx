@@ -10,7 +10,7 @@ const Hero = () => {
       <div className="flex flex-col items-center justify-center w-full gap-5 px-4 sm:px-6 lg:px-8 p-48">
         <h1 className="text-5xl sm:text-6xl font-bold text-center">HAJAR</h1>
         <h1 className="text-4xl sm:text-6xl font-bold text-center leading-tight">
-          "Hapus <span className="text-red-600"> Judi </span>Anti Ribet"
+          Hapus <span className="text-red-600"> Judi </span>Anti Ribet
         </h1>
         <p className="text-gray-700 text-center text-sm sm:text-base lg:text-lg max-w-md sm:max-w-lg lg:max-w-xl px-4">
           Jangan Biarkan Komentar{" "}
