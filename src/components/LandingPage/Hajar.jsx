@@ -1,9 +1,9 @@
-import { login } from "@/libs/hooks/login";
+import { useLogin } from "@/libs/hooks/useLogin";
 import { Button } from "@heroui/react";
 import { LoginModal } from "../LoginModal";
 
 const Hajar = () => {
-  const { isOpen, onOpen, onClose, handleLogin } = login();
+  const { isOpen, onOpen, onClose, handleLogin } = useLogin();
 
   return (
     <div className="bg-hajar h-screen flex" id="hajar">

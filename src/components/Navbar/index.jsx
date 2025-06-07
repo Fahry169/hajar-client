@@ -1,6 +1,6 @@
 "use client";
 
-import { login } from "@/libs/hooks/login";
+import { useLogin } from "@/libs/hooks/useLogin";
 import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from "@heroui/navbar";
 import { Button, Image } from "@heroui/react";
 import Link from "next/link";
@@ -9,7 +9,7 @@ import { LoginModal } from "../LoginModal";
 
 const NavbarComponent = () => {
   const [isBlurred, setIsBlurred] = useState(false);
-  const { isOpen, onOpen, onClose, handleLogin } = login();
+  const { isOpen, onOpen, onClose, handleLogin } = useLogin();
 
   const handleSmoothScroll = (e, sectionId) => {
     e.preventDefault();

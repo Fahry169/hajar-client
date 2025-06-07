@@ -1,9 +1,9 @@
-import { login } from "@/libs/hooks/login";
+import { useLogin } from "@/libs/hooks/useLogin";
 import { Button } from "@heroui/react";
 import { LoginModal } from "../LoginModal";
 
 const Hero = () => {
-  const { isOpen, onOpen, onClose, handleLogin } = login();
+  const { isOpen, onOpen, onClose, handleLogin } = useLogin();
 
   return (
     <div className="bg-hero -mt-16 h-screen flex" id="hero">
