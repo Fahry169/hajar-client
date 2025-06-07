@@ -9,64 +9,30 @@ import {
 } from '@heroui/react';
 import { useGoogleLogin } from '@react-oauth/google';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { BASE_API } from '@/libs/environtment';
+import { useEffect } from 'react';
 
 export const LoginModal = ({ isOpen, onClose }) => {
+  const params = useSearchParams();
   const router = useRouter();
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      try {
-        const accessToken = tokenResponse.access_token;
+  useEffect(() => {
+    const token = params.get('token');
+    const userId = params.get('userId');
 
-        // Optionally get user info
-        const userInfoRes = await fetch(
-          'https://www.googleapis.com/oauth2/v3/userinfo',
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
+    if (token) {
+      Cookies.set('authorization', token, { expires: 1 / 24 }); // expired dalam 1 jam
+      console.log('Token disimpan ke cookie');
+      // Opsional: bersihkan query URL
+      router.replace('/dashboard');
+    }
+  }, []);
 
-        const userInfo = await userInfoRes.json();
-        console.log('[✅ User Info]', userInfo);
-
-        // Send to backend
-        const res = await fetch(BASE_API + '/user/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userInfo, accessToken }),
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-
-          Cookies.set('authorization', data.token, { expires: 1 / 24 }); // Store access token in cookies
-          onClose(); // Close the modal after successful login
-          router.push('/dashboard'); // Redirect to dashboard after login
-        } else {
-          alert('Failed to register user');
-        }
-
-        // Optional: redirect to dashboard router.push('/dashboard');
-      } catch (error) {
-        console.error(error);
-        alert('Failed to login with Google');
-      }
-    },
-
-    onError: (error) => {
-      alert('Google login failed');
-    },
-    scope:
-      'https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/au' +
-      'th/youtube.force-ssl',
-  });
+  const handleGoogleLogin = () => {
+    window.location.href = BASE_API + '/login';
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} placement="center" backdrop="blur">
