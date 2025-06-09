@@ -9,6 +9,7 @@ import {
 import { FiYoutube } from "react-icons/fi";
 import { FaHome } from "react-icons/fa";
 import { SlLogout } from "react-icons/sl";
+import { TbReport } from "react-icons/tb";
 import Cookies from "js-cookie";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
@@ -80,6 +81,21 @@ const Sidebar = () => {
           startContent={<FiYoutube size={22} />}
         >
           <p className={isCompact ? "hidden" : ""}>Video</p>
+        </Button>
+        <Button
+          as={Link}
+          href="/dashboard/report"
+          isIconOnly={isCompact}
+          className={`${
+            isCompact ? "" : "flex justify-start"
+          } w-full text-gray-800 ${
+            pathname.endsWith("/dashboard/report")
+              ? "bg-slate-50"
+              : "bg-slate-50/50"
+          } hover:bg-slate-50 transition-all duration-400`}
+          startContent={<TbReport size={22} />}
+        >
+          <p className={isCompact ? "hidden" : ""}>Report</p>
         </Button>
       </div>
       <div>
