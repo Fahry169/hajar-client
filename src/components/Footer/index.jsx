@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const Footer = () => {
   const footerData = {
     product: ["Test", "Test", "Test"],
@@ -10,10 +12,13 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-6 py-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="lg:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mr-3">
-                <div className="w-6 h-6 bg-red-900 rounded-full"></div>
-              </div>
+            <div className="flex items-center mb-4 gap-2">
+               <Image
+              alt="Logo"
+              src="/logo/logo.png"
+              width={45}
+              height={50}
+            />
               <h2 className="text-xl font-bold">Hajar</h2>
             </div>
             <p className="text-white text-sm leading-relaxed max-w-xs">
