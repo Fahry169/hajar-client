@@ -36,13 +36,70 @@ export function withAuth(Component) {
     const [comments, setComments] = useState({});
     const token = Cookies.get(AUTH_COOKIE_NAME);
 
+    const deleteCommentById = async (channelId, videoId, commentId) => {
+      try {
+        const res = await fetch(
+          `${BASE_API}/${channelId}/${videoId}/${commentId}`,
+          {
+            method: 'DELETE',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (!res.ok) throw new Error('Gagal menghapus komentar');
+
+        // Hapus komentar dari state lokal
+        setComments((prev) => {
+          const updated = { ...prev };
+          updated[videoId] = updated[videoId].filter(
+            (c) => c.commentId !== commentId
+          );
+          return updated;
+        });
+
+        console.log(`Komentar ${commentId} berhasil dihapus`);
+      } catch (error) {
+        console.error('Gagal menghapus komentar:', error.message);
+      }
+    };
+
+    const refreshComments = async (channelId, videoId) => {
+      try {
+        const res = await fetch(
+          `${BASE_API}/${channelId}/${videoId}/comments/sync`,
+          {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const data = await res.json();
+        if (!data.comments)
+          throw new Error('Sinkronisasi gagal atau tidak ada komentar.');
+
+        setComments((prev) => ({
+          ...prev,
+          [videoId]: data.comments,
+        }));
+
+        console.log(`Komentar video ${videoId} berhasil disinkronisasi`);
+      } catch (error) {
+        console.error('Gagal refresh komentar:', error.message);
+      }
+    };
+
     const fetchCommentsForVideos = async (channelId, videos) => {
       const newComments = {};
 
       for (const video of videos) {
         try {
+          // Mengambil komentar untuk setiap video dari database
           const res = await fetch(
-            BASE_API + `/${channelId}/${video.videoId}/comments`,
+            `${BASE_API}/${channelId}/${video.videoId}/comments`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -50,10 +107,29 @@ export function withAuth(Component) {
             }
           );
 
-          if (!res.ok) throw new Error('Gagal fetch komentar');
-
           const data = await res.json();
-          newComments[video.videoId] = data.comments || [];
+
+          // Jika komentar kosong, lakukan sinkronisasi dari YouTube
+          if ((data.comments || []).length === 0) {
+            console.log(
+              `Komentar kosong untuk ${video.videoId}, sinkronisasi...`
+            );
+
+            const syncRes = await fetch(
+              `${BASE_API}/${channelId}/${video.videoId}/comments/sync`,
+              {
+                method: 'PUT',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+
+            const syncData = await syncRes.json();
+            newComments[video.videoId] = syncData.comments || [];
+          } else {
+            newComments[video.videoId] = data.comments || [];
+          }
         } catch (err) {
           console.error(
             `Komentar gagal diambil untuk ${video.videoId}:`,
@@ -68,27 +144,42 @@ export function withAuth(Component) {
 
     const fetchChannelAndVideos = async (token) => {
       try {
-        const channelRes = await fetch(`${BASE_API}/channel`, {
+        // Mengambil channel dari API
+        const res = await fetch(`${BASE_API}/channels`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
+        const data = await res.json();
 
-        const channelData = await channelRes.json();
-        const channelId = channelData.channels?.[0]?.id;
+        // Cek apakah ada channel yang ditemukan
+        if ((data.channels || []).length === 0) {
+          console.log('Channel belum ada di Firestore. Sinkronisasi...');
+          // Sinkronisasi channel, jika belum ada sinkronisasi dan lakukan fetch ulang
+          await fetch(`${BASE_API}/channels/sync`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          // ambil lagi setelah sinkronisasi
+          return fetchChannelAndVideos(token);
+        }
+
+        const channelId = data.channels?.[0]?.id;
         if (!channelId) throw new Error('Channel ID tidak ditemukan');
 
-        const videoRes = await fetch(`${BASE_API}/${channelId}/video`, {
+        // Panggil video berdasarkan channelId
+        const videoRes = await fetch(`${BASE_API}/${channelId}/videos`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
         const videoData = await videoRes.json();
-        const fetchedVideos = videoData.videos || [];
-        setVideos(fetchedVideos);
-
-        await fetchCommentsForVideos(channelId, fetchedVideos);
+        setVideos(videoData.videos || []);
+        await fetchCommentsForVideos(channelId, videoData.videos || []);
       } catch (err) {
         console.error('Gagal mengambil channel, video, atau komentar:', err);
       }
@@ -116,7 +207,8 @@ export function withAuth(Component) {
     }, [pathname, searchParams, router]);
 
     return authed ? (
-      <AuthContext.Provider value={{ videos, comments }}>
+      <AuthContext.Provider
+        value={{ videos, comments, refreshComments, deleteCommentById }}>
         <Component {...props} />
       </AuthContext.Provider>
     ) : null;

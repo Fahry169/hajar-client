@@ -1,38 +1,114 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/libs/withAuth';
+import { useSearchParams } from 'next/navigation';
+import { AiFillLike } from 'react-icons/ai';
+import { FaComment, FaTrashRestore } from 'react-icons/fa';
+import { Button } from '@heroui/react';
 
 function Page() {
   const searchParams = useSearchParams();
-  const { comments, videos } = useAuth();
+  const { comments, videos, refreshComments, deleteCommentById } = useAuth();
   const videoId = searchParams.get('videoId');
 
-  const videoComments = comments[videoId] || [];
+  const videoComments = (comments[videoId] || []).filter(
+    (comment) => comment.status !== 'deleted'
+  );
   const videoData = videos.find((v) => v.videoId === videoId);
 
-  return (
-    <div className="p-8">
-      <h1 className="text-xl font-bold mb-4">
-        Komentar untuk Video: {videoId}
-      </h1>
+  const handleRefresh = () => {
+    if (videoData?.channelId && videoData?.videoId) {
+      refreshComments(videoData.channelId, videoData.videoId);
+    }
+  };
 
+  const handleDeleteCommentById = (commentId) => {
+    if (videoData?.channelId && videoData?.videoId) {
+      deleteCommentById(videoData.channelId, videoData.videoId, commentId);
+    }
+  };
+
+  return (
+    <div className="p-4 sm:p-6 lg:p-8">
+      {/* Video Section */}
       {videoData && (
-        <div className="mb-6">
+        <div className="mb-6 flex flex-col lg:flex-row gap-8 lg:gap-12">
           <img
             src={videoData.thumbnail}
             alt={videoData.title}
-            className="w-full max-w-md rounded-lg shadow mb-2"
+            className="w-full lg:w-[450px] h-auto rounded-lg shadow mb-2"
           />
-          <h2 className="text-lg font-semibold">{videoData.title}</h2>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+              {videoData.title}
+            </h2>
+            <div className="flex flex-wrap items-center gap-4 lg:gap-8">
+              <p className="text-md text-gray-700">
+                {videoData.viewCount.toLocaleString('id-ID')} views
+              </p>
+              <p className="text-md text-gray-700">
+                {new Date(videoData.publishedAt).toLocaleDateString('id-ID', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+            <div className="flex gap-6 sm:gap-10 lg:gap-16">
+              <div className="flex items-center gap-2">
+                <AiFillLike className="text-blue-500" />
+                <span className="text-md text-gray-700">
+                  {videoData.likeCount}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaComment className="text-gray-700" />
+                <span className="text-md text-gray-700">
+                  {videoData.commentCount}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
+      {/* Header Comment */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Comment List</h1>
+          <p className="text-sm font-normal">
+            Akan terlihat jika ada komentar judol
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button color="primary" onPress={handleRefresh}>
+            Refresh
+          </Button>
+          <Button color="danger">Hapus Semua</Button>
+        </div>
+      </div>
+
+      {/* Comment Section */}
       {videoComments.length > 0 ? (
         <ul className="space-y-2">
           {videoComments.map((comment, idx) => (
-            <li key={idx} className="border p-3 rounded-md bg-white shadow-sm">
-              <h3 className="font-semibold mb-2">{comment.author}</h3>
-              <p>{comment.text}</p>
+            <li
+              key={idx}
+              className="border p-3 rounded-md bg-white shadow-sm flex gap-4 flex-col sm:flex-row items-start sm:items-center">
+              {comment.authorProfileImageURL && (
+                <img
+                  src={comment.authorProfileImageURL}
+                  alt={comment.author}
+                  className="w-10 h-10 rounded-full"
+                />
+              )}
+              <div className="flex-1">
+                <h3 className="font-semibold mb-1">{comment.author}</h3>
+                <p>{comment.text}</p>
+              </div>
+              <button
+                onClick={() => handleDeleteCommentById(comment.commentId)}>
+                <FaTrashRestore className="text-red-500 self-end sm:self-auto" />
+              </button>
             </li>
           ))}
         </ul>
