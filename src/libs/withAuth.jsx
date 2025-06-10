@@ -37,6 +37,21 @@ export function withAuth(Component) {
     const token = Cookies.get(AUTH_COOKIE_NAME);
 
     const deleteCommentById = async (channelId, videoId, commentId) => {
+      // 1. Menambahkan pengecekan di awal untuk memastikan token ada.
+      if (!token) {
+        console.error(
+          'Gagal menghapus: Token tidak ditemukan. Silakan login ulang.'
+        );
+        return; // Hentikan eksekusi jika tidak ada token
+      }
+
+      // 2. Menambahkan log yang lebih detail untuk debugging
+      console.log(`Mencoba menghapus komentar dengan detail:`, {
+        channelId,
+        videoId,
+        commentId,
+      });
+
       try {
         const res = await fetch(
           `${BASE_API}/${channelId}/${videoId}/${commentId}`,
@@ -48,20 +63,28 @@ export function withAuth(Component) {
           }
         );
 
-        if (!res.ok) throw new Error('Gagal menghapus komentar');
+        
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({})); 
+          const errorMessage =
+            errorData.message || `Server merespons dengan status ${res.status}`;
+          throw new Error(errorMessage);
+        } 
 
-        // Hapus komentar dari state lokal
         setComments((prev) => {
           const updated = { ...prev };
-          updated[videoId] = updated[videoId].filter(
-            (c) => c.commentId !== commentId
-          );
+          if (updated[videoId]) {
+            updated[videoId] = updated[videoId].filter(
+              (c) => c.commentId !== commentId
+            );
+          }
           return updated;
         });
 
-        console.log(`Komentar ${commentId} berhasil dihapus`);
+        console.log(`Komentar ${commentId} berhasil dihapus dari UI.`);
       } catch (error) {
         console.error('Gagal menghapus komentar:', error.message);
+        // Anda bisa menambahkan feedback untuk user di sini jika diperlukan
       }
     };
 
@@ -144,44 +167,75 @@ export function withAuth(Component) {
 
     const fetchChannelAndVideos = async (token) => {
       try {
-        // Mengambil channel dari API
-        const res = await fetch(`${BASE_API}/channels`, {
+        // Coba ambil channel dari database kita terlebih dahulu
+        const channelsRes = await fetch(`${BASE_API}/channels`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        const data = await res.json();
 
-        // Cek apakah ada channel yang ditemukan
-        if ((data.channels || []).length === 0) {
-          console.log('Channel belum ada di Firestore. Sinkronisasi...');
-          // Sinkronisasi channel, jika belum ada sinkronisasi dan lakukan fetch ulang
-          await fetch(`${BASE_API}/channels/sync`, {
+        if (!channelsRes.ok) {
+          throw new Error('Gagal menghubungi server untuk mengambil channel.');
+        }
+
+        let data = await channelsRes.json();
+        let channels = data.channels || [];
+
+        // Jika channel tidak ditemukan di database, lakukan sinkronisasi
+        if (channels.length === 0) {
+          console.log(
+            'Channel belum ada. Memulai sinkronisasi dari YouTube...'
+          );
+
+          const syncRes = await fetch(`${BASE_API}/channels/sync`, {
             method: 'PUT',
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
 
-          // ambil lagi setelah sinkronisasi
-          return fetchChannelAndVideos(token);
+          const syncData = await syncRes.json();
+
+          if (!syncRes.ok || (syncData.channels || []).length === 0) {
+            // Jika sinkronisasi gagal atau YouTube tidak mengembalikan channel
+            throw new Error(
+              'Sinkronisasi gagal atau tidak ada channel ditemukan di akun YouTube Anda.'
+            );
+          }
+          console.log('Sinkronisasi berhasil!');
+          channels = syncData.channels;
+        }
+        const channelId = channels[0]?.id;
+
+        if (!channelId) {
+          throw new Error(
+            'Gagal mendapatkan Channel ID setelah proses selesai.'
+          );
         }
 
-        const channelId = data.channels?.[0]?.id;
-        if (!channelId) throw new Error('Channel ID tidak ditemukan');
+        console.log(`Mengambil video untuk Channel ID: ${channelId}`);
 
-        // Panggil video berdasarkan channelId
+        // Panggil API untuk mengambil video berdasarkan channelId
         const videoRes = await fetch(`${BASE_API}/${channelId}/videos`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
+        if (!videoRes.ok) {
+          throw new Error('Gagal mengambil daftar video.');
+        }
+
         const videoData = await videoRes.json();
-        setVideos(videoData.videos || []);
-        await fetchCommentsForVideos(channelId, videoData.videos || []);
+        const videos = videoData.videos || [];
+        setVideos(videos); 
+
+        // Lanjutkan untuk mengambil komentar
+        await fetchCommentsForVideos(channelId, videos);
       } catch (err) {
-        console.error('Gagal mengambil channel, video, atau komentar:', err);
+        console.error('Terjadi kesalahan dalam proses pengambilan data:', err);
+      } finally {
+        console.log('Proses pengambilan data selesai.');
       }
     };
 
