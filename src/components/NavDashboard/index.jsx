@@ -21,7 +21,7 @@ const NavDashboard = () => {
               width={45}
               height={50}
             />
-        <h1 className="text-2xl font-semibold text-gradient-to-br from-red-400 to-red-500">HAJAR</h1>
+        <h1 className="text-2xl font-semibold bg-gradient-to-br from-red-200 to-red-800 bg-clip-text text-transparent">HAJAR ENTERPRISE</h1>
       </div>
       <div className="sm:hidden">
         <Dropdown>

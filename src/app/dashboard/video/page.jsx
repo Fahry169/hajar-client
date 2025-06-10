@@ -1,40 +1,58 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { logout, useAuth } from '@/libs/withAuth';
+import { ChatTextIcon, HeartIcon } from '@phosphor-icons/react';
+import { Image } from '@heroui/react';
+
+// Import fungsi formatter
+import { formatToWIB } from '@/utilities/dateFormat';
 
 function Page() {
   const router = useRouter();
-  const { videos } = useAuth(); // Mengambil data videos dari context Auth
+  const { videos } = useAuth();
 
   const handleClick = (videoId) => {
     router.push(`/dashboard/video/comments?videoId=${videoId}`);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-8">
-        <div className="bg-white rounded-lg shadow-sm">
-          <div className="mt-4">
-            <h2 className="text-xl font-semibold mb-2">Video List</h2>
-            <h2 className="text-sm font-normal mb-2">
-              Silahkan pilih video yang ingin di hajar
-            </h2>
+    <div className="min-h-screen bg-gray-50 p-8 rounded-lg shadow-md">
+      <div className="max-w-6xl mx-auto">
+        <div>
+          <div className="">
             {videos.length > 0 ? (
-              <ul className="flex flex-wrap gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {videos.map((video) => (
-                  <li
+                  <div
                     key={video.videoId}
                     onClick={() => handleClick(video.videoId)}
-                    className="w-64 border-2 p-2 rounded-md shadow-sm cursor-pointer hover:shadow-md transition">
-                    <img
+                    className="border-2 p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-xl hover:scale-105 transition-all bg-white"
+                  >
+                    <Image
                       src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-auto rounded-md"
+                      className="w-full h-auto rounded-md object-cover aspect-video"
                     />
-                    <p className="mt-2 font-semibold">{video.title}</p>
-                  </li>
+                    <div className="space-y-2 mt-3">
+                      <p className="font-semibold text-sm leading-tight line-clamp-1">{video.title}</p>
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center gap-1">
+                          <ChatTextIcon size={14} color="gray" />
+                          <span>{video.commentCount}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <span>{formatToWIB(video.publishedAt)}</span>
+                        </div>
+                      </div>
+                      {video.uploadDate && (
+                        <div className="text-xs text-gray-500">
+                          <p>{video.uploadDate}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             ) : (
               <p className="text-gray-500">Tidak ada video ditemukan.</p>
             )}
