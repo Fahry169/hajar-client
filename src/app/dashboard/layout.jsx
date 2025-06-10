@@ -1,13 +1,17 @@
 "use client";
 
+import NavDashboard from "@/components/NavDashboard";
 import Sidebar from "@/components/Sidebar";
 import { withAuth } from "@/libs/withAuth";
 
 function DashboardLayout({ children }) {
   return (
-    <div className="min-h-screen flex flex-row bg-slate-100">
+    <div className="min-h-screen flex flex-row bg-gradient-to-b from-red-100 to-slate-50">
       <Sidebar />
-      {children}
+       <div className="flex-grow max-h-screen overflow-auto py-4 px-2 sm:px-2 space-y-4">
+          <NavDashboard />
+          {children}
+        </div>
     </div>
   );
 }
