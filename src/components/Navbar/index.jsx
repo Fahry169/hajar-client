@@ -48,17 +48,14 @@ const NavbarComponent = () => {
         }`}
       >
         <NavbarContent>
-          <NavbarBrand className="flex gap-2">
+          <NavbarBrand className="flex items-center">
             <Link href="#" className="flex gap-2 items-center">
-              {/* <Image
+              <Image
               alt="Logo"
-              src="/images/logo.png"
-              width={40}
-              height={40}
-            /> */}
-              <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center mr-3">
-                <div className="w-6 h-6 bg-white rounded-full"></div>
-              </div>
+              src="/logo/logo.png"
+              width={45}
+              height={50}
+            />
               <p className=" hidden sm:block font-bold text-xl text-gray-700">
                 HAJAR
               </p>

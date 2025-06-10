@@ -9,14 +9,15 @@ import {
 import { FiYoutube } from "react-icons/fi";
 import { FaHome } from "react-icons/fa";
 import { SlLogout } from "react-icons/sl";
+import { TbReport } from "react-icons/tb";
 import Cookies from "js-cookie";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
-import { Router } from "next/router";
 
 const Sidebar = () => {
   const [isCompact, setIsCompact] = useState(false);
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const lastCompactMode = Cookies.get("last_sidebar_compact");
@@ -28,8 +29,8 @@ const Sidebar = () => {
 
   const handleLogOut = () => {
     Cookies.remove("authorization");
-    Router.push("/");
-};
+    router.push("/");
+  };
 
   const handleCompactChange = () => {
     const compactMode = isCompact;
@@ -42,7 +43,7 @@ const Sidebar = () => {
     <div
       className={`${
         isCompact ? "w-20" : "w-60"
-      } m-4 rounded-lg bg-gradient-to-br from-red-400 to-red-500 transition-all duration-300 p-4 space-y-3 hidden sm:flex flex-col justify-between shadow-lg shadow-sky-800/30`}
+      } m-4 rounded-lg bg-red-500 transition-all duration-300 p-4 space-y-3 hidden sm:flex flex-col justify-between shadow-lg shadow-red-800/40`}
     >
       <div className="space-y-3">
         <Button onPress={handleCompactChange} isIconOnly variant="light">
@@ -59,7 +60,9 @@ const Sidebar = () => {
           isIconOnly={isCompact}
           className={`${
             isCompact ? "" : "flex justify-start"
-          } w-full text-gray-800 ${pathname.endsWith('/dashboard') ? "bg-slate-50" : "bg-slate-50/50"} hover:bg-slate-50 transition-all duration-400`}
+          } w-full text-gray-800 ${
+            pathname.endsWith("/dashboard") ? "bg-slate-50" : "bg-slate-50/50"
+          } hover:bg-slate-50 transition-all duration-400`}
           startContent={<FaHome size={22} />}
         >
           <p className={isCompact ? "hidden" : ""}>Home</p>
@@ -70,12 +73,30 @@ const Sidebar = () => {
           isIconOnly={isCompact}
           className={`${
             isCompact ? "" : "flex justify-start"
-          } w-full text-gray-800 ${pathname.endsWith('/dashboard/video') ? "bg-slate-50" : "bg-slate-50/50"} hover:bg-slate-50 transition-all duration-400`}
+          } w-full text-gray-800 ${
+            pathname.endsWith("/dashboard/video")
+              ? "bg-slate-50"
+              : "bg-slate-50/50"
+          } hover:bg-slate-50 transition-all duration-400`}
           startContent={<FiYoutube size={22} />}
         >
           <p className={isCompact ? "hidden" : ""}>Video</p>
         </Button>
-        
+        <Button
+          as={Link}
+          href="/dashboard/report"
+          isIconOnly={isCompact}
+          className={`${
+            isCompact ? "" : "flex justify-start"
+          } w-full text-gray-800 ${
+            pathname.endsWith("/dashboard/report")
+              ? "bg-slate-50"
+              : "bg-slate-50/50"
+          } hover:bg-slate-50 transition-all duration-400`}
+          startContent={<TbReport size={22} />}
+        >
+          <p className={isCompact ? "hidden" : ""}>Report</p>
+        </Button>
       </div>
       <div>
         <Button
@@ -93,4 +114,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;    
+export default Sidebar;
