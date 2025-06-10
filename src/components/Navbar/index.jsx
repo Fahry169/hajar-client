@@ -50,12 +50,7 @@ const NavbarComponent = () => {
         <NavbarContent>
           <NavbarBrand className="flex items-center">
             <Link href="#" className="flex gap-2 items-center">
-              <Image
-              alt="Logo"
-              src="/logo/logo.png"
-              width={45}
-              height={50}
-            />
+              <Image alt="Logo" src="/logo/logo.png" width={45} height={50} />
               <p className=" hidden sm:block font-bold text-xl text-gray-700">
                 HAJAR
               </p>
@@ -82,7 +77,11 @@ const NavbarComponent = () => {
             </Link>
           </NavbarItem>
           <NavbarItem className="text-xs sm:text-base text-gray-600 hover:font-semibold hover:text-black">
-            <Link color="foreground" href="#contact">
+            <Link
+              color="foreground"
+              href="#footer"
+              onClick={(e) => handleSmoothScroll(e, "footer")}
+            >
               Contact
             </Link>
           </NavbarItem>
@@ -94,9 +93,7 @@ const NavbarComponent = () => {
               <Image
                 alt="Google Logo"
                 src="/icon/google.svg"
-                width={22}
-                height={22}
-                className="inline-block mr-2"
+                className="sm:w-6 w-4"
               />
               Masuk
             </Button>

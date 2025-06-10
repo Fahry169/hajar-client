@@ -1,74 +1,48 @@
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
-  const footerData = {
-    product: ["Test", "Test", "Test"],
-    company: ["Test", "Test", "Test"],
-    legal: ["Test", "Test", "Test"],
-  };
-
   return (
     <div className="bg-black text-white">
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-          <div className="lg:col-span-1">
+      <div className="max-w-7xl mx-auto px-6 py-10 f">
+        <div className="md:flex md:justify-between">
+          <div id="footer">
             <div className="flex items-center mb-4 gap-2">
-               <Image
-              alt="Logo"
-              src="/logo/logo.png"
-              width={45}
-              height={50}
-            />
+              <Image alt="Logo" src="/logo/logo.png" width={45} height={50} />
               <h2 className="text-xl font-bold">Hajar</h2>
             </div>
             <p className="text-white text-sm leading-relaxed max-w-xs">
               Menjaga komentar Youtube tetap bersih dan bermakna
             </p>
           </div>
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-6">Product</h3>
-            <ul className="space-y-3">
-              {footerData.product.map((item, index) => (
-                <li key={index}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-400 transition-colors duration-100 text-sm"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-6">Company</h3>
-            <ul className="space-y-3">
-              {footerData.company.map((item, index) => (
-                <li key={index}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-400 transition-colors duration-100 text-sm"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-white font-semibold text-lg mb-6">Legal</h3>
-            <ul className="space-y-3">
-              {footerData.legal.map((item, index) => (
-                <li key={index}>
-                  <a
-                    href="#"
-                    className="text-white hover:text-gray-400 transition-colors duration-100 text-sm"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
+          <div className="grid grid-cols-1 gap-8 sm:gap-6 sm:grid-cols-3 mt-8 xl:mt-2">
+            <div className="flex flex-col gap-4">
+              <h1>REPOSITORIES</h1>
+              <Link
+                href="https://github.com/hajar-enterprise"
+                className="hover:underline text-gray-400 text-sm"
+              >
+                Github
+              </Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h1>Developers</h1>
+              <Link
+                href="https://github.com/orgs/HAJAR-Enterprise/people"
+                className="hover:underline text-gray-400 text-sm"
+              >
+                Our Team
+              </Link>
+            </div>
+            <div className="flex flex-col gap-4">
+              <h1>LEGAL</h1>
+              <Link href="#" className="hover:underline text-gray-400 text-sm">
+                Privacy Policy
+              </Link>
+              <Link href="#" className="hover:underline text-gray-400 text-sm">
+                Terms & Conditions
+              </Link>
+            </div>
           </div>
         </div>
         <div className="border-t border-gray-500 my-10"></div>
