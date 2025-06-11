@@ -31,6 +31,7 @@ export function withAuth(Component) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const [userInfo, setUserInfo] = useState(null);
     const [authed, setAuthed] = useState(false);
     const [videos, setVideos] = useState([]); // optional, kalau memang perlu
     const [comments, setComments] = useState({});
@@ -63,13 +64,12 @@ export function withAuth(Component) {
           }
         );
 
-        
         if (!res.ok) {
-          const errorData = await res.json().catch(() => ({})); 
+          const errorData = await res.json().catch(() => ({}));
           const errorMessage =
             errorData.message || `Server merespons dengan status ${res.status}`;
           throw new Error(errorMessage);
-        } 
+        }
 
         setComments((prev) => {
           const updated = { ...prev };
@@ -165,6 +165,30 @@ export function withAuth(Component) {
       setComments(newComments);
     };
 
+    const syncChannel = async (token) => {
+      try {
+        const res = await fetch(`${BASE_API}/channels/sync`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Failed to sync channel');
+        }
+
+        const data = await res.json();
+
+        return data;
+      } catch (error) {
+        console.error('Gagal sinkronisasi channel:', error.message);
+
+        throw error;
+      }
+    };
+
     const fetchChannelAndVideos = async (token) => {
       try {
         // Coba ambil channel dari database kita terlebih dahulu
@@ -179,7 +203,9 @@ export function withAuth(Component) {
         }
 
         let data = await channelsRes.json();
+        console.log('Data channel:', data);
         let channels = data.channels || [];
+        setUserInfo(channels[0]);
 
         // Jika channel tidak ditemukan di database, lakukan sinkronisasi
         if (channels.length === 0) {
@@ -228,7 +254,7 @@ export function withAuth(Component) {
 
         const videoData = await videoRes.json();
         const videos = videoData.videos || [];
-        setVideos(videos); 
+        setVideos(videos);
 
         // Lanjutkan untuk mengambil komentar
         await fetchCommentsForVideos(channelId, videos);
@@ -262,7 +288,14 @@ export function withAuth(Component) {
 
     return authed ? (
       <AuthContext.Provider
-        value={{ videos, comments, refreshComments, deleteCommentById }}>
+        value={{
+          videos,
+          comments,
+          refreshComments,
+          deleteCommentById,
+          syncChannel,
+          userInfo,
+        }}>
         <Component {...props} />
       </AuthContext.Provider>
     ) : null;
