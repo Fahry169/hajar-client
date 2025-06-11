@@ -32,13 +32,13 @@ const Page = () => {
   };
 
   const handleViewChannel = () => {
-  const channelId = userInfo?.id;
-  if (channelId) {
-    window.open(`https://www.youtube.com/channel/${channelId}`, '_blank');
-  } else {
-    alert('Channel ID tidak ditemukan');
-  }
-};
+    const channelId = userInfo?.id;
+    if (channelId) {
+      window.open(`https://www.youtube.com/channel/${channelId}`, "_blank");
+    } else {
+      alert("Channel ID tidak ditemukan");
+    }
+  };
 
   if (!userInfo) {
     return (
@@ -69,33 +69,16 @@ const Page = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-9rem)] bg-gradient-to-br from-slate-50 to-blue-50 p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">
-              Dashboard Channel
-            </h1>
-            <p className="text-gray-600">
-              Kelola dan pantau komentar di channel YouTube Anda
-            </p>
-          </div>
-          <Button
-            onPress={handleRefresh}
-            color="primary"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            <ArrowsClockwiseIcon size={20} />
-            Refresh Data
-          </Button>
-        </div>
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div>
+      <div>
+        <div className="bg-white h-[calc(100vh-9rem)] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
           {/* Channel Header */}
           <div className="bg-white h-32 relative">
             <div className="absolute inset-0 bg-black bg-opacity-20"></div>
           </div>
           <div className="p-8">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6 -mt-16 relative z-10">
+            {/* Profile Photo Section */}
+            <div className="flex justify-center -mt-16 relative z-10 mb-6">
               <div className="relative">
                 <img
                   src={userInfo.thumbnail}
@@ -112,68 +95,71 @@ const Page = () => {
                   </svg>
                 </div>
               </div>
-              <div className="flex-1 mt-4 md:mt-0">
-                <div className="flex items-center gap-3 mb-2">
-                  <h2 className="text-3xl font-bold text-gray-900">
-                    {userInfo.title}
-                    {userInfo.customUrl}
-                  </h2>
+            </div>
+
+            {/* Channel Info Section */}
+            <div className="text-center">
+              <div className="mb-2">
+                <h2 className="text-3xl font-bold text-gray-900">
+                  {userInfo.title}
+                  {userInfo.customUrl}
+                </h2>
+              </div>
+
+              <p className="text-gray-600 text-base mb-3 max-w-2xl mx-auto leading-relaxed">
+                {userInfo.description || "Tidak ada deskripsi tersedia."}
+              </p>
+
+              <div className="flex items-center justify-center gap-1 text-gray-500 text-sm mb-4">
+                <svg
+                  className="w-4 h-4"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                Bergabung sejak {formatDate(userInfo.publishedAt)}
+              </div>
+
+              <div className="flex flex-wrap justify-center gap-6">
+                <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">
+                    <span className="font-bold text-gray-900">
+                      {formatNumber(userInfo.subscriberCount)}
+                    </span>{" "}
+                    Subscriber
+                  </span>
                 </div>
 
-                <p className="text-gray-600 text-base mb-3 max-w-2xl leading-relaxed">
-                  {userInfo.description || "Tidak ada deskripsi tersedia."}
-                </p>
-
-                <div className="flex items-center gap-1 text-gray-500 text-sm mb-4">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Bergabung sejak {formatDate(userInfo.publishedAt)}
+                <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">
+                    <span className="font-bold text-gray-900">
+                      {userInfo.videoCount || 0}
+                    </span>{" "}
+                    Video
+                  </span>
                 </div>
-                <div className="flex flex-wrap gap-6">
-                  <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-                    <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                    <span className="text-gray-600 text-sm">
-                      <span className="font-bold text-gray-900">
-                        {formatNumber(userInfo.subscriberCount)}
-                      </span>{" "}
-                      Subscriber
-                    </span>
-                  </div>
 
-                  <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    <span className="text-gray-600 text-sm">
-                      <span className="font-bold text-gray-900">
-                        {userInfo.videoCount || 0}
-                      </span>{" "}
-                      Video
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-                    <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-600 text-sm">
-                      <span className="font-bold text-gray-900">
-                        {formatNumber(userInfo.viewCount || 0)}
-                      </span>{" "}
-                      Total Views
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-600 text-sm">
+                    <span className="font-bold text-gray-900">
+                      {formatNumber(userInfo.viewCount || 0)}
+                    </span>{" "}
+                    Total Views
+                  </span>
                 </div>
               </div>
             </div>
           </div>
           <div className="px-8 pb-8 pt-4">
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 items-center justify-center">
               <Button
                 onPress={handleViewChannel}
                 className="bg-red-600 hover:bg-red-700 text-white font-semibold"
@@ -197,6 +183,14 @@ const Page = () => {
               >
                 <TbReport size={20} weight="fill" />
                 Report
+              </Button>
+              <Button
+                onPress={handleRefresh}
+                color="primary"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+              >
+                <ArrowsClockwiseIcon size={20} />
+                Refresh Data
               </Button>
             </div>
           </div>
