@@ -26,14 +26,14 @@ function Page() {
                   <div
                     key={video.videoId}
                     onClick={() => handleClick(video.videoId)}
-                    className="border-2 p-3 rounded-lg shadow-sm cursor-pointer hover:shadow-xl hover:scale-105 transition-all bg-white"
+                    className="border-2 rounded-sm shadow-sm cursor-pointer hover:shadow-xl hover:scale-105 transition-all bg-white"
                   >
                     <Image
                       src={video.thumbnail}
                       alt={video.title}
-                      className="w-full h-auto rounded-md object-cover aspect-video"
+                      className="w-full h-auto rounded-sm object-cover aspect-video"
                     />
-                    <div className="space-y-2 mt-3">
+                    <div className="space-y-2 px-2 py-3">
                       <p className="font-semibold text-sm leading-tight line-clamp-1">{video.title}</p>
                       <div className="flex items-center justify-between text-xs text-gray-500">
                         <div className="flex items-center gap-1">
