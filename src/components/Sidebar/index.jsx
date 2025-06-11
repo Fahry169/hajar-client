@@ -43,7 +43,7 @@ const Sidebar = () => {
     <div
       className={`${
         isCompact ? "w-20" : "w-60"
-      } m-4 rounded-lg bg-red-500 transition-all duration-300 p-4 space-y-3 hidden sm:flex flex-col justify-between shadow-lg shadow-red-800/40`}
+      } m-4 rounded-lg bg-red-600 transition-all duration-300 p-4 space-y-3 hidden sm:flex flex-col justify-between shadow-lg shadow-red-800/40`}
     >
       <div className="space-y-3">
         <Button onPress={handleCompactChange} isIconOnly variant="light">
