@@ -1,10 +1,8 @@
-// app/dashboard/page.jsx
 'use client';
 
-import { useAuth } from "@/libs/withAuth";
+import { useDashboardPresenter } from "./dashboardPresenter";
 import { useRouter } from "next/navigation";
 import { Button, addToast } from "@heroui/react";
-import Cookies from "js-cookie";
 import {
   ArrowsClockwiseIcon,
   PlayIcon,
@@ -15,7 +13,7 @@ import { TbReport } from "react-icons/tb";
 import { Suspense } from "react";
 
 const DashboardContent = () => {
-  const { userInfo, syncChannel } = useAuth();
+  const { userInfo, syncChannel, loading } = useDashboardPresenter();
   const router = useRouter();
 
   const handleRefresh = async () => {
@@ -26,8 +24,7 @@ const DashboardContent = () => {
         color: "primary",
       });
 
-      const token = Cookies.get("authorization");
-      const res = await syncChannel(token);
+      const res = await syncChannel();
 
       if (res.success === false) {
         addToast({
@@ -62,7 +59,7 @@ const DashboardContent = () => {
     }
   };
 
-  if (!userInfo) {
+  if (loading || !userInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
@@ -88,7 +85,6 @@ const DashboardContent = () => {
 
   return (
     <div className="bg-white h-[calc(100vh-9rem)] rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-      {/* Header background */}
       <div className="bg-white h-32 relative">
         <div className="absolute inset-0 bg-black bg-opacity-20" />
       </div>
@@ -131,33 +127,18 @@ const DashboardContent = () => {
 
           {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6">
-            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-              <div className="w-3 h-3 bg-red-500 rounded-full" />
-              <span className="text-gray-600 text-sm">
-                <span className="font-bold text-gray-900">
-                  {formatNumber(userInfo.subscriberCount)}
-                </span>{" "}
-                Subscriber
-              </span>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-              <div className="w-3 h-3 bg-blue-500 rounded-full" />
-              <span className="text-gray-600 text-sm">
-                <span className="font-bold text-gray-900">
-                  {userInfo.videoCount || 0}
-                </span>{" "}
-                Video
-              </span>
-            </div>
-            <div className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
-              <div className="w-3 h-3 bg-green-500 rounded-full" />
-              <span className="text-gray-600 text-sm">
-                <span className="font-bold text-gray-900">
-                  {formatNumber(userInfo.viewCount || 0)}
-                </span>{" "}
-                Total Views
-              </span>
-            </div>
+            {[
+              ['red', userInfo.subscriberCount, 'Subscriber'],
+              ['blue', userInfo.videoCount || 0, 'Video'],
+              ['green', userInfo.viewCount || 0, 'Total Views'],
+            ].map(([color, count, label]) => (
+              <div key={label} className="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
+                <div className={`w-3 h-3 bg-${color}-500 rounded-full`} />
+                <span className="text-gray-600 text-sm">
+                  <span className="font-bold text-gray-900">{formatNumber(count)}</span> {label}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -165,35 +146,19 @@ const DashboardContent = () => {
       {/* Actions */}
       <div className="px-8 pb-8 pt-4">
         <div className="flex flex-wrap gap-3 items-center justify-center">
-          <Button
-            onPress={handleViewChannel}
-            className="bg-red-600 hover:bg-red-700 text-white font-semibold"
-          >
+          <Button onPress={handleViewChannel} className="bg-red-600 hover:bg-red-700 text-white font-semibold">
             <YoutubeLogoIcon size={20} weight="fill" />
             Lihat Channel
           </Button>
-          <Button
-            as={Link}
-            href="/dashboard/video"
-            color="primary"
-            className="bg-blue-600 hover:bg-blue-700 px-6 font-semibold"
-          >
+          <Button as={Link} href="/dashboard/video" color="primary" className="bg-blue-600 hover:bg-blue-700 px-6 font-semibold">
             <PlayIcon weight="fill" />
             Video
           </Button>
-          <Button
-            as={Link}
-            href="/dashboard/report"
-            className="bg-green-600 hover:bg-green-700 text-white px-6 font-semibold"
-          >
+          <Button as={Link} href="/dashboard/report" className="bg-green-600 hover:bg-green-700 text-white px-6 font-semibold">
             <TbReport size={20} />
             Report
           </Button>
-          <Button
-            onPress={handleRefresh}
-            color="primary"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-          >
+          <Button onPress={handleRefresh} color="primary" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
             <ArrowsClockwiseIcon size={20} />
             Refresh Data
           </Button>
@@ -203,12 +168,10 @@ const DashboardContent = () => {
   );
 };
 
-const Page = () => {
-  return (
-    <Suspense fallback={<div>Memuat Dashboard...</div>}>
-      <DashboardContent />
-    </Suspense>
-  );
-};
+const Page = () => (
+  <Suspense fallback={<div>Memuat Dashboard...</div>}>
+    <DashboardContent />
+  </Suspense>
+);
 
 export default Page;
