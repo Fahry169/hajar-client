@@ -9,7 +9,6 @@ import {
   YoutubeLogoIcon,
 } from "@phosphor-icons/react";
 import Link from "next/link";
-import { TbReport } from "react-icons/tb";
 import { Suspense } from "react";
 
 const DashboardContent = () => {
@@ -146,10 +145,6 @@ const DashboardContent = () => {
           <Button as={Link} href="/dashboard/video" color="primary" className="bg-blue-600 hover:bg-blue-700 px-6 font-semibold">
             <PlayIcon weight="fill" />
             Video
-          </Button>
-          <Button as={Link} href="/dashboard/report" className="bg-green-600 hover:bg-green-700 text-white px-6 font-semibold">
-            <TbReport size={20} />
-            Report
           </Button>
           <Button onPress={handleRefresh} color="primary" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
             <ArrowsClockwiseIcon size={20} />

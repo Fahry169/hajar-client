@@ -7,7 +7,6 @@ import {
 import { FiYoutube } from "react-icons/fi";
 import { FaHome } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { TbReport } from "react-icons/tb";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -46,15 +45,6 @@ const NavDashboard = () => {
               className="mb-2 rounded-lg"
             >
               Video
-            </DropdownItem>
-            <DropdownItem 
-              key="Report"
-              as={Link}
-              href="/dashboard/report"
-              startContent={<TbReport size={22} />}
-              className="mb-2 rounded-lg"
-            >
-              Report
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
