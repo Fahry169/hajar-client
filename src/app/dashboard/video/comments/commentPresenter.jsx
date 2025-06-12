@@ -12,7 +12,7 @@ export function useCommentPresenter(videoId) {
   const token = Cookies.get('authorization');
 
   useEffect(() => {
-    if (!token || !videoId) return; 
+    if (!token || !videoId) return;
 
     const loadVideoAndComments = async () => {
       try {
@@ -51,10 +51,13 @@ export function useCommentPresenter(videoId) {
       const raw = data.comments || [];
 
       if (raw.length === 0) {
-        const syncRes = await fetch(`${BASE_API}/${channelId}/${videoId}/comments/sync`, {
-          method: 'PUT',
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const syncRes = await fetch(
+          `${BASE_API}/${channelId}/${videoId}/comments/sync`,
+          {
+            method: 'PUT',
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         const syncData = await syncRes.json();
         setComments(syncData.comments || []);
       } else {
@@ -95,6 +98,30 @@ export function useCommentPresenter(videoId) {
     );
   };
 
+  const deleteAllComments = async () => {
+    if (!video) return;
+
+    try {
+      const res = await fetch(
+        `${BASE_API}/${video.channelId}/${video.videoId}/comments`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error('Gagal menghapus semua komentar');
+
+      setComments([]);
+      console.log('✅ Semua komentar berhasil dihapus');
+    } catch (err) {
+      console.error('❌ deleteAllComments error:', err.message);
+      throw err;
+    }
+  };
+
   const syncChannel = async () => {
     const res = await fetch(`${BASE_API}/channels/sync`, {
       method: 'PUT',
@@ -111,5 +138,6 @@ export function useCommentPresenter(videoId) {
     refreshComments,
     deleteComment,
     syncChannel,
+    deleteAllComments,
   };
 }

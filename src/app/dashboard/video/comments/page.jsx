@@ -14,13 +14,8 @@ import { useCommentPresenter } from './commentPresenter';
 function CommentPage() {
   const searchParams = useSearchParams();
   const videoId = searchParams.get('videoId');
-  const {
-    video,
-    comments,
-    loading,
-    refreshComments,
-    deleteComment,
-  } = useCommentPresenter(videoId);
+  const { video, comments, loading, refreshComments, deleteComment, deleteAllComments } =
+    useCommentPresenter(videoId);
 
   const handleRefresh = async () => {
     try {
@@ -68,12 +63,21 @@ function CommentPage() {
     }
   };
 
-  const handleHajarAction = () => {
-    addToast({
-      title: 'Aksi HAJAR',
-      description: 'Fitur HAJAR akan segera diimplementasikan',
-      color: 'warning',
-    });
+  const handleHajarAction = async () => {
+    try {
+      await deleteAllComments();
+      addToast({
+        title: 'Berhasil',
+        description: 'Semua komentar berhasil dihapus',
+        color: 'success',
+      });
+    } catch (err) {
+      addToast({
+        title: 'Gagal',
+        description: err.message || 'Gagal menghapus semua komentar',
+        color: 'danger',
+      });
+    }
   };
 
   if (loading || !video) {
@@ -95,8 +99,7 @@ function CommentPage() {
             />
             <div
               className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-lg cursor-pointer"
-              onClick={handleWatchVideo}
-            >
+              onClick={handleWatchVideo}>
               <div className="bg-red-600 hover:bg-red-700 text-white rounded-full p-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
                 <PlayIcon size={32} weight="fill" />
               </div>
@@ -110,9 +113,7 @@ function CommentPage() {
             <div className="flex items-center gap-4 lg:gap-6">
               <div className="flex items-center gap-2 px-2 py-1 rounded-full">
                 <AiFillLike className="text-gray-700" />
-                <span className="text-md text-gray-700">
-                  {video.likeCount}
-                </span>
+                <span className="text-md text-gray-700">{video.likeCount}</span>
               </div>
               <div className="flex items-center gap-2">
                 <FaComment className="text-gray-700" />
@@ -131,8 +132,7 @@ function CommentPage() {
             <div className="mt-2">
               <Button
                 onPress={handleWatchVideo}
-                className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
-              >
+                className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2">
                 <PlayIcon size={18} weight="bold" />
                 Tonton di YouTube
               </Button>
@@ -145,13 +145,15 @@ function CommentPage() {
         <div className="flex items-center justify-between px-2 py-2 border-b-2">
           <h1 className="text-xl sm:text-2xl font-semibold">Comment List</h1>
           <div className="flex gap-2">
-            <Button onPress={handleRefresh} color="primary" className="px-3 rounded-lg">
+            <Button
+              onPress={handleRefresh}
+              color="primary"
+              className="px-3 rounded-lg">
               <IoMdRefresh size={20} />
             </Button>
             <Button
               className="text-xs sm:text-sm bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold px-6"
-              onPress={handleHajarAction}
-            >
+              onPress={handleHajarAction}>
               HAJAR
             </Button>
           </div>
@@ -162,8 +164,7 @@ function CommentPage() {
             {comments.map((comment, idx) => (
               <li
                 key={idx}
-                className="border p-3 bg-white shadow-sm flex gap-4 flex-row sm:items-center hover:bg-gray-50 transition-colors"
-              >
+                className="border p-3 bg-white shadow-sm flex gap-4 flex-row sm:items-center hover:bg-gray-50 transition-colors">
                 {comment.authorProfileImageURL && (
                   <img
                     src={comment.authorProfileImageURL}
@@ -178,8 +179,7 @@ function CommentPage() {
                 <button
                   onClick={() => handleDeleteCommentById(comment.commentId)}
                   className="p-2 hover:bg-red-50 rounded-full transition-colors"
-                  title="Hapus komentar"
-                >
+                  title="Hapus komentar">
                   <FaTrashRestore className="text-red-500 hover:text-red-700 transition-colors" />
                 </button>
               </li>
@@ -190,7 +190,9 @@ function CommentPage() {
             <div className="mb-4">
               <FaComment className="text-gray-300 text-6xl mx-auto mb-4" />
             </div>
-            <p className="text-gray-500 text-lg">Tidak ada komentar ditemukan.</p>
+            <p className="text-gray-500 text-lg">
+              Tidak ada komentar ditemukan.
+            </p>
           </div>
         )}
       </div>
