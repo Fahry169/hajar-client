@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { Suspense } from 'react';
-import { useRouter } from 'next/navigation';
-import { ChatTextIcon } from '@phosphor-icons/react';
-import { Image } from '@heroui/react';
-import { formatToWIB } from '@/utilities/dateFormat';
-import VideoSkeleton from '@/components/VideoSkeleton';
-import { useVideoPresenter } from './videoPresenter';
+import { Suspense } from "react";
+import { useRouter } from "next/navigation";
+import { ChatTextIcon } from "@phosphor-icons/react";
+import { Button, Image } from "@heroui/react";
+import { formatToWIB } from "@/utilities/dateFormat";
+import VideoSkeleton from "@/components/VideoSkeleton";
+import { useVideoPresenter } from "./videoPresenter";
 
 function VideoList() {
   const router = useRouter();
@@ -27,12 +27,12 @@ function VideoList() {
               <div
                 key={video.videoId}
                 onClick={() => handleClick(video.videoId)}
-                className="border-2 rounded-sm shadow-sm cursor-pointer hover:shadow-xl hover:scale-105 transition-all bg-white"
+                className="border-2  shadow-sm cursor-pointer hover:shadow-xl hover:scale-[102%] transition-all bg-white p-4 rounded-xl"
               >
                 <Image
                   src={video.thumbnail}
                   alt={video.title}
-                  className="w-full h-auto rounded-sm object-cover aspect-video"
+                  className="w-full h-auto object-cover aspect-video rounded-lg"
                 />
                 <div className="space-y-2 px-2 py-3">
                   <p className="font-semibold text-sm leading-tight line-clamp-1">
@@ -52,6 +52,9 @@ function VideoList() {
                       <p>{video.uploadDate}</p>
                     </div>
                   )}
+                </div>
+                <div className="w-full flex justify-end">
+                  <Button color="primary" className="bg-gradient-to-r from-red-500 to-red-700">Buka</Button>
                 </div>
               </div>
             ))}

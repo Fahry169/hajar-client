@@ -1,6 +1,7 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
+import { Suspense } from "react";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -18,8 +19,8 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${poppins.className} antialiased`}>
         <Providers>
-          {children}
-        </Providers>
+          <Suspense>{children}</Suspense>
+        </Providers>  
       </body>
     </html>
   );

@@ -16,7 +16,7 @@ export function useDashboardPresenter() {
   }, []);
 
   useEffect(() => {
-    if (!token) return; // ⛔ Tunggu token siap
+    if (!token) return;
 
     const fetchUserInfo = async () => {
       try {
@@ -28,7 +28,7 @@ export function useDashboardPresenter() {
         if (data.channels?.length > 0) {
           setUserInfo(data.channels[0]);
         } else {
-          await syncChannel(); // fallback kalau belum pernah sync
+          await syncChannel();
         }
       } catch (err) {
         console.error('Gagal fetch channel:', err);

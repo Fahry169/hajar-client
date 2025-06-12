@@ -61,7 +61,7 @@ const DashboardContent = () => {
 
   if (loading || !userInfo) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="h-[calc(100vh-9rem)] flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
           <p className="text-gray-500 text-lg">Memuat data channel...</p>
@@ -89,7 +89,6 @@ const DashboardContent = () => {
         <div className="absolute inset-0 bg-black bg-opacity-20" />
       </div>
       <div className="p-8">
-        {/* Avatar */}
         <div className="flex justify-center -mt-16 relative z-10 mb-6">
           <div className="relative">
             <img
@@ -104,8 +103,6 @@ const DashboardContent = () => {
             </div>
           </div>
         </div>
-
-        {/* Info */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900">
             {userInfo.title}
@@ -124,8 +121,6 @@ const DashboardContent = () => {
             </svg>
             Bergabung sejak {formatDate(userInfo.publishedAt)}
           </div>
-
-          {/* Stats */}
           <div className="flex flex-wrap justify-center gap-6">
             {[
               ['red', userInfo.subscriberCount, 'Subscriber'],
@@ -142,8 +137,6 @@ const DashboardContent = () => {
           </div>
         </div>
       </div>
-
-      {/* Actions */}
       <div className="px-8 pb-8 pt-4">
         <div className="flex flex-wrap gap-3 items-center justify-center">
           <Button onPress={handleViewChannel} className="bg-red-600 hover:bg-red-700 text-white font-semibold">
