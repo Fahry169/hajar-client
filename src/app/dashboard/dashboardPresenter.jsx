@@ -50,6 +50,10 @@ export function useDashboardPresenter() {
       const data = await res.json();
       if (data.channels?.length > 0) {
         setUserInfo(data.channels[0]);
+        
+        // Sync videos after syncing channel
+        const channelId = data.channels[0].id;
+        await syncVideos(channelId);
       } else {
         throw new Error('Tidak ada channel ditemukan');
       }
@@ -61,9 +65,30 @@ export function useDashboardPresenter() {
     }
   };
 
+  const syncVideos = async (channelId) => {
+    try {
+      const res = await fetch(`${BASE_API}/${channelId}/videos/sync`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!res.ok) {
+        throw new Error('Gagal sync videos');
+      }
+
+      const data = await res.json();
+      console.log('Videos berhasil disinkronisasi');
+      return data;
+    } catch (err) {
+      console.error('syncVideos error:', err.message);
+      throw err;
+    }
+  };
+
   return {
     userInfo,
     loading,
     syncChannel,
+    syncVideos,
   };
 }

@@ -54,7 +54,7 @@ function VideoList() {
                   )}
                 </div>
                 <div className="w-full flex justify-end">
-                  <Button color="primary" className="bg-gradient-to-r from-red-500 to-red-700">Buka</Button>
+                  <Button color="primary" onPress={() => handleClick(video.videoId)} className="bg-gradient-to-r from-red-500 to-red-700">Buka</Button>
                 </div>
               </div>
             ))}

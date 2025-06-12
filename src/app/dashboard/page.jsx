@@ -19,7 +19,7 @@ const DashboardContent = () => {
     try {
       addToast({
         title: "Memuat...",
-        description: "Sedang menyinkronkan data channel",
+        description: "Sedang menyinkronkan channel dan video",
         color: "primary",
       });
 
