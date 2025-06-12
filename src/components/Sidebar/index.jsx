@@ -74,7 +74,8 @@ const Sidebar = () => {
           className={`${
             isCompact ? "" : "flex justify-start"
           } w-full text-gray-800 ${
-            pathname.endsWith("/dashboard/video")
+            pathname === "/dashboard/video" ||
+            pathname.startsWith("/dashboard/video/comments")
               ? "bg-slate-50"
               : "bg-slate-50/50"
           } hover:bg-slate-50 transition-all duration-400`}
@@ -82,6 +83,7 @@ const Sidebar = () => {
         >
           <p className={isCompact ? "hidden" : ""}>Video</p>
         </Button>
+
         <Button
           as={Link}
           href="/dashboard/report"

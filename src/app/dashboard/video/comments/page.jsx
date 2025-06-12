@@ -5,9 +5,10 @@ import { AiFillLike } from "react-icons/ai";
 import { FaComment, FaTrashRestore } from "react-icons/fa";
 import { LiaEyeSolid } from "react-icons/lia";
 import { IoMdRefresh } from "react-icons/io";
-import { Button, Image } from "@heroui/react";
+import { Button, Image, addToast } from "@heroui/react";
 import { formatToWIB } from "@/utilities/dateFormat";
 import { PlayIcon } from "@phosphor-icons/react";
+import { Suspense } from "react";
 
 function Page() {
   const searchParams = useSearchParams();
@@ -19,15 +20,45 @@ function Page() {
   );
   const videoData = videos.find((v) => v.videoId === videoId);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     if (videoData?.channelId && videoData?.videoId) {
-      refreshComments(videoData.channelId, videoData.videoId);
+      try {
+        await refreshComments(videoData.channelId, videoData.videoId);
+        addToast({
+          title: "Berhasil",
+          description: "Komentar berhasil diperbarui",
+          color: "success",
+        });
+      } catch (error) {
+        addToast({
+          title: "Gagal",
+          description: "Gagal memperbarui komentar",
+          color: "danger",
+        });
+      }
     }
   };
 
-  const handleDeleteCommentById = (commentId) => {
+  const handleDeleteCommentById = async (commentId) => {
     if (videoData?.channelId && videoData?.videoId) {
-      deleteCommentById(videoData.channelId, videoData.videoId, commentId);
+      try {
+        await deleteCommentById(
+          videoData.channelId,
+          videoData.videoId,
+          commentId
+        );
+        addToast({
+          title: "Berhasil",
+          description: "Komentar berhasil dihapus",
+          color: "success",
+        });
+      } catch (error) {
+        addToast({
+          title: "Gagal",
+          description: "Gagal menghapus komentar",
+          color: "danger",
+        });
+      }
     }
   };
 
@@ -35,7 +66,21 @@ function Page() {
     if (videoId) {
       const youtubeUrl = `https://www.youtube.com/watch?v=${videoId}`;
       window.open(youtubeUrl, "_blank");
+      addToast({
+        title: "Video Dibuka",
+        description: "Video sedang dibuka di tab baru",
+        color: "primary",
+      });
     }
+  };
+
+  const handleHajarAction = () => {
+    // Implementasi aksi HAJAR di sini
+    addToast({
+      title: "Aksi HAJAR",
+      description: "Fitur HAJAR akan segera diimplementasikan",
+      color: "warning",
+    });
   };
 
   return (
@@ -98,9 +143,8 @@ function Page() {
                   onPress={handleWatchVideo}
                   className="bg-red-600 hover:bg-red-700 text-white font-semibold px-6 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
                 >
-                 <PlayIcon size={18} weight="bold" />
+                  <PlayIcon size={18} weight="bold" />
                   Tonton di YouTube
-                  
                 </Button>
               </div>
             </div>
@@ -121,7 +165,10 @@ function Page() {
             >
               <IoMdRefresh size={20} />
             </Button>
-            <Button className="text-xs sm:text-sm bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold px-6">
+            <Button
+              className="text-xs sm:text-sm bg-gradient-to-r from-red-500 to-red-700 text-white font-semibold px-6"
+              onPress={handleHajarAction}
+            >
               HAJAR
             </Button>
           </div>
@@ -169,4 +216,10 @@ function Page() {
   );
 }
 
-export default Page;
+export default function WrappedPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Loading comments...</div>}>
+      <Page />
+    </Suspense>
+  );
+}
